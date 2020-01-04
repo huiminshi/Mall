@@ -1,5 +1,10 @@
 import {request} from './request'
 
+export function getRecommends() {
+  return request({
+    url: '/recommend'
+  })
+}
 export function getDetail(iid) {
   return request({
     url: '/detail',

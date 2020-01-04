@@ -35,10 +35,10 @@
   import TabControl from "components/content/tabControl/TabControl";
   import GoodsList from "components/content/goods/GoodsList";
   import Scroll from "components/common/scroll/Scroll";
-  import BackTop from "components/content/backTop/BackTop";
 
   import {getHomeMultidata,getHomeGoods} from "network/home";
-  import {debounce} from "common/utils";
+  // import {debounce} from "common/utils";
+  import {itemListenerMixin, backTopMixin} from "common/mixin";
 
   export default {
     name: "Home",
@@ -50,7 +50,6 @@
       TabControl,
       GoodsList,
       Scroll,
-      BackTop
     },
     data() {
       return {
@@ -62,18 +61,23 @@
           'sell': {page: 0, list: []},
         },
         currentType:'pop',
-        isBackTopShow: false,
         tabOffsetTop: 0,
         isTabControlFixed: false,
-        saveY: 0
+        saveY: 0,
+        homeItemImageLoad: null,
       }
     },
+    mixins: [itemListenerMixin, backTopMixin],
     activated() {
       this.$refs.scroll.scrollTo(0,this.saveY);
       this.$refs.scroll.refresh()
     },
     deactivated() {
+      // 保存Y值
       this.saveY = this.$refs.scroll.scrollY();
+
+      // 取消全局事件监听
+      this.$bus.$off('itemImageLoad', this.homeItemImageLoad)
     },
     created() {
       // 请求多个数据
@@ -85,13 +89,8 @@
       // console.log(this.isTabControlFixed)
     },
     mounted() {
-      // 图片加载完成的事件监听
-      const refresh = debounce(this.$refs.scroll.refresh, 50);
-      this.$bus.$on('itemImageLoad', () => {
-        refresh()
-      });
-      // console.log(this.$refs.scroll.scrollY())
 
+      // this.tabClick(0)
     },
     computed: {
       showGoods(){
@@ -117,14 +116,13 @@
         this.$refs.tabControl1.currentIndex = index;
         this.$refs.tabControl2.currentIndex = index;
       },
-      backClick() {
-        this.$refs.scroll.scrollTo(0,0,500)
-      },
+
       contentScroll(position) {
         // 判断BackTop是否显示
-        this.isBackTopShow = (-position.y) > 1000;
+        this.listenerShowBackTop(position);
         // 决定tabControl是否停留
         this.isTabControlFixed = (-position.y) >= this.tabOffsetTop;
+
       },
       loadMore() {
         this.getHomeGoods(this.currentType);
