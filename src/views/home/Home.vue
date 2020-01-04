@@ -22,6 +22,8 @@
     </scroll>
     <back-top @click.native="backClick" v-show="isBackTopShow"/>
   </div>
+
+
 </template>
 
 <script>
@@ -62,8 +64,16 @@
         currentType:'pop',
         isBackTopShow: false,
         tabOffsetTop: 0,
-        isTabControlFixed: false
+        isTabControlFixed: false,
+        saveY: 0
       }
+    },
+    activated() {
+      this.$refs.scroll.scrollTo(0,this.saveY);
+      this.$refs.scroll.refresh()
+    },
+    deactivated() {
+      this.saveY = this.$refs.scroll.scrollY();
     },
     created() {
       // 请求多个数据
@@ -72,14 +82,16 @@
       this.getHomeGoods('pop');
       this.getHomeGoods('new');
       this.getHomeGoods('sell');
-
+      // console.log(this.isTabControlFixed)
     },
     mounted() {
       // 图片加载完成的事件监听
-      const refresh = debounce(this.$refs.scroll.refresh, 50)
+      const refresh = debounce(this.$refs.scroll.refresh, 50);
       this.$bus.$on('itemImageLoad', () => {
         refresh()
-      })
+      });
+      // console.log(this.$refs.scroll.scrollY())
+
     },
     computed: {
       showGoods(){
