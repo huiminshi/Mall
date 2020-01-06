@@ -36,7 +36,11 @@
   .bottom-bar {
     height: 49px;
     background-color: #fff;
-    position: relative;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
     display: flex;
     text-align: center;
   }
@@ -73,18 +77,19 @@
 
   .bar-right {
     font-size: 15px;
+    color: #fff;
     line-height: 49px;
+    display: flex;
   }
 
   .bar-right .cart {
     background-color: #ffe817;
     color: #333;
-    width: 50%;
+    flex: 1;
   }
 
   .bar-right .buy {
-    width: 50%;
+    flex: 1;
     background-color: #f69;
-    color: #fff;
   }
 </style>

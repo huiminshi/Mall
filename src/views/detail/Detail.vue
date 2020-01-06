@@ -10,7 +10,7 @@
       <detail-comment-info ref="comment" :comment-info="commentInfo"/>
       <goods-list ref="recommend" :goods="recommends"/>
     </scroll>
-    <detail-bottom-bar/>
+    <detail-bottom-bar class="detail-bottom-bar" @addToCart="addToCart"/>
     <back-top @click.native="backClick" v-show="isBackTopShow"/>
   </div>
 </template>
@@ -23,7 +23,8 @@
   import DetailGoodsInfo from "./childComps/DetailGoodsInfo";
   import DetailParamInfo from "./childComps/DetailParamInfo";
   import DetailCommentInfo from "./childComps/DetailCommentInfo";
-  import DetailBottomBar from "./childComps/DetailBottomBar";
+  import DetailBottomBar from './childComps/DetailBottomBar';
+
 
   import Scroll from "components/common/scroll/Scroll";
   import GoodsList from 'components/content/goods/GoodsList';
@@ -31,6 +32,7 @@
   import {getRecommends, getDetail, Goods, GoodsParam, Shop} from "network/detail";
   import {debounce} from "common/utils";
   import {itemListenerMixin, backTopMixin} from "common/mixin";
+  import {mapActions} from 'vuex'
 
   export default {
     name: "Detail",
@@ -44,7 +46,7 @@
       DetailCommentInfo,
       DetailBottomBar,
       Scroll,
-      GoodsList
+      GoodsList,
     },
     data() {
       return {
@@ -98,7 +100,7 @@
       // 请求推荐数据
       getRecommends().then(res => {
         this.recommends = res.data.data.list;
-        console.log(this.recommends)
+        // console.log(this.recommends)
       });
 
     },
@@ -109,6 +111,7 @@
       this.$bus.$off('itemImageLoad',this.detailItemImageLoad)
     },
     methods: {
+      ...mapActions(['addCart']),
       imageLoad() {
         this.$refs.scroll.refresh();
         const detailNavHeight = this.$refs.detailNav.$el.offsetHeight;
@@ -136,7 +139,20 @@
         this.listenerShowBackTop(position)
       },
       addToCart() {
-        console.log('cart')
+        // 获取购物车需要展示的信息
+        const product = {};
+        product.iid = this.iid;
+        product.image = this.topImages[0];
+        product.title = this.goods.title;
+        product.desc = this.goods.desc;
+        product.price = this.goods.realLowPrice;
+        // 将商品添加到购物车里
+        this.addCart(product).then(res => {
+          this.$toast.show(res,1500)
+        })
+        // this.$store.dispatch('addCart',product).then(res => {
+        //   console.log(res)
+        // })
       }
     }
   }
@@ -150,13 +166,24 @@
     height: 100vh;
   }
 
-  .detail-nav {
-    position: relative;
-    z-index: 9;
-    background-color: #fff;
-  }
+  /*.detail-nav {*/
+  /*  position: relative;*/
+  /*  z-index: 9;*/
+  /*  background-color: #fff;*/
+  /*}*/
 
   .content {
-    height: calc(100% - 44px);
+    position: absolute;
+    top: 44px;
+    bottom: 49px;
+    overflow: hidden;
+    /*height: calc(100% - 44px);*/
+  }
+
+  .detail-bottom-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
   }
 </style>

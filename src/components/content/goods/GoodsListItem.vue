@@ -27,8 +27,8 @@
     },
     methods: {
       imageLoad() {
-        this.$bus.$emit('itemImageLoad')
-        console.log('itemImageLoad')
+        this.$bus.$emit('itemImageLoad');
+        // console.log('itemImageLoad')
       },
       itemClick() {
         this.$router.push('/detail/'+this.item.iid);
