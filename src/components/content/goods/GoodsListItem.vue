@@ -22,7 +22,7 @@
     },
     computed: {
       getImg() {
-        return  this.item.image || this.item.show.img;
+        return this.item.img || this.item.image || this.item.show.img;
       }
     },
     methods: {
