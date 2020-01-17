@@ -24,6 +24,7 @@
   import TabContentDetail from "./childComps/TabContentDetail";
 
   import {getCategory,getSubCategory,getCategoryDetail} from "network/category";
+  import {itemListenerMixin} from 'common/mixin';
 
   export default {
     name: "Category",
@@ -35,17 +36,22 @@
       TabControl,
       TabContentDetail
     },
+    mixins:[itemListenerMixin],
     data() {
       return {
         categories: [],
         categoryData: {},
         currentIndex: -1,
         currentType: 'pop',
-        tabType: ['pop','new','sell']
+        tabType: ['pop','new','sell'],
+        categoryItemImageLoaded: null
       }
     },
     created() {
       this.getCategory();
+    },
+    deactivated() {
+      this.$bus.$off('itemImageLoad',this.categoryItemImageLoaded)
     },
     computed: {
       showSubcategory() {
